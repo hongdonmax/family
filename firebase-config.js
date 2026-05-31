@@ -9,12 +9,12 @@
    ========================================================= */
 
 window.FIREBASE_CONFIG = {
-  apiKey:        "PASTE_API_KEY",
-  authDomain:    "PASTE_PROJECT_ID.firebaseapp.com",
-  projectId:     "PASTE_PROJECT_ID",
-  storageBucket: "PASTE_PROJECT_ID.appspot.com",
-  messagingSenderId: "PASTE_SENDER_ID",
-  appId:         "PASTE_APP_ID",
+  apiKey:            "AIzaSyBotdOXWDvumwOOsUzBK_0ZP1LcRh7UNVY",
+  authDomain:        "family-a0a1c.firebaseapp.com",
+  projectId:         "family-a0a1c",
+  storageBucket:     "family-a0a1c.firebasestorage.app",
+  messagingSenderId: "3935252600",
+  appId:             "1:3935252600:web:c18eb4620cadd61bfbbd8d",
 };
 
 /* 가족이 함께 보는 한 개의 데이터 칸 이름.
