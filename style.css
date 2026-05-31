@@ -320,6 +320,17 @@ body {
 .btn.big { font-size: 18px; padding: 14px 28px; border-radius: 16px; }
 
 .footer { text-align: center; color: var(--muted); font-size: 13px; margin-top: 8px; }
+.sync-status {
+  display: inline-block;
+  margin-bottom: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #eef0f6;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 12px;
+}
+.sync-status.ok { background: #e3f8ee; color: #1f9d63; }
 
 /* 축하 팝업 */
 .celebrate {
@@ -328,6 +339,7 @@ body {
   display: flex; align-items: center; justify-content: center;
   z-index: 50;
 }
+.celebrate[hidden] { display: none; }
 .celebrate-box {
   background: #fff;
   border-radius: 24px;
