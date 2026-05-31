@@ -358,15 +358,6 @@ el("saveSettings").addEventListener("click", () => {
   }
 });
 
-el("resetKid").addEventListener("click", () => {
-  const info = KIDS[state.current];
-  if (confirm(`${info.title}의 달력 기록을 모두 지울까요?\n(되돌릴 수 없어요.)`)) {
-    kid().daily = {};
-    saveState();
-    render();
-  }
-});
-
 /* =========================================================
    실시간 공유 (Firebase Firestore)
    - firebase-config.js 값을 채우면 자동으로 켜집니다.

@@ -339,6 +339,7 @@ body {
   display: flex; align-items: center; justify-content: center;
   z-index: 50;
 }
+.celebrate[hidden] { display: none; }
 .celebrate-box {
   background: #fff;
   border-radius: 24px;
