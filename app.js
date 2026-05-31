@@ -12,7 +12,7 @@ const TASKS = [
   { id: "eat",        emoji: "🍚", name: "밥 잘 먹기" },
   { id: "wakeup",     emoji: "⏰", name: "잘 일어나기" },
   { id: "grandpa",    emoji: "👵", name: "할머니·할아버지 말씀 잘 듣기" },
-  { id: "hajji",      emoji: "🏡", name: "하지집 할머니 말씀 잘 듣기" },
+  { id: "hajji",      emoji: "🏡", name: "하찌 말씀 잘 듣기" },
   { id: "parents",    emoji: "👪", name: "엄마·아빠 말씀 잘 듣기" },
   { id: "brush",      emoji: "🦷", name: "양치 잘하기" },
 ];
