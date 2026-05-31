@@ -68,7 +68,7 @@ function migrateFromV1() {
   } catch (e) { return null; }
 }
 
-function loadState() {
+function loadLocal() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
@@ -78,14 +78,29 @@ function loadState() {
   return { current: "yuni", kids: { yuni: defaultKidState(), rini: defaultKidState() } };
 }
 
-function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+// 누락된 필드를 안전하게 채움 (로컬·클라우드 데이터 공통)
+function ensureFields() {
+  if (!state.kids) state.kids = {};
+  ["yuni", "rini"].forEach((k) => {
+    state.kids[k] = Object.assign(defaultKidState(), state.kids[k] || {});
+    if (!state.kids[k].daily) state.kids[k].daily = {};
+  });
+  if (!state.current) state.current = "yuni";
+}
 
-let state = loadState();
-// 안전장치: 누락 필드 채우기
-["yuni", "rini"].forEach((k) => {
-  state.kids[k] = Object.assign(defaultKidState(), state.kids[k] || {});
-  if (!state.kids[k].daily) state.kids[k].daily = {};
-});
+function saveLocal() {
+  // current(보고 있는 아이)는 기기마다 다를 수 있어 로컬에만 저장
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ current: state.current, kids: state.kids }));
+}
+
+// 저장 = 로컬 저장 + (가능하면) 클라우드로 전송
+function saveState() {
+  saveLocal();
+  cloudPush();
+}
+
+let state = loadLocal();
+ensureFields();
 
 // 화면용 임시 상태 (저장 안 함)
 let selectedDate = todayKey();
@@ -352,5 +367,73 @@ el("resetKid").addEventListener("click", () => {
   }
 });
 
+/* =========================================================
+   실시간 공유 (Firebase Firestore)
+   - firebase-config.js 값을 채우면 자동으로 켜집니다.
+   - 채우기 전엔 이 기기에만 저장되는 모드로 동작합니다.
+   ========================================================= */
+const FIREBASE = window.FIREBASE_CONFIG || {};
+const FAMILY_ID = window.FAMILY_ID || "family";
+const cloudConfigured = !!FIREBASE.apiKey && !String(FIREBASE.apiKey).startsWith("PASTE");
+
+let cloudReady = false;
+let cloudDocRef = null;
+let fb = null; // Firestore 함수 모음
+
+const syncStatusEl = el("syncStatus");
+function setSyncStatus(text, ok) {
+  if (!syncStatusEl) return;
+  syncStatusEl.textContent = text;
+  syncStatusEl.classList.toggle("ok", !!ok);
+}
+
+function cloudPush() {
+  if (cloudReady && cloudDocRef && fb) {
+    // 전체 기록을 통째로 저장 (마지막 저장이 반영됨)
+    fb.setDoc(cloudDocRef, { kids: state.kids, updatedAt: Date.now() }).catch(() => {});
+  }
+}
+
+async function initCloud() {
+  if (!cloudConfigured) {
+    setSyncStatus("💾 이 기기에만 저장돼요 (공유하려면 README의 설정을 따라주세요)", false);
+    return;
+  }
+  setSyncStatus("☁️ 실시간 공유 연결 중…", false);
+  try {
+    const appMod = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+    const fsMod  = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    const app = appMod.initializeApp(FIREBASE);
+    const db = fsMod.getFirestore(app);
+    cloudDocRef = fsMod.doc(db, "boards", FAMILY_ID);
+    fb = fsMod;
+
+    fsMod.onSnapshot(cloudDocRef, (snap) => {
+      if (!snap.exists()) {
+        // 클라우드에 아직 데이터가 없으면 지금 기기 데이터로 시작
+        fsMod.setDoc(cloudDocRef, { kids: state.kids, updatedAt: Date.now() }).catch(() => {});
+        return;
+      }
+      // 내가 방금 보낸 변경의 메아리는 무시 (다른 기기 변경만 반영)
+      if (snap.metadata.hasPendingWrites) return;
+      const data = snap.data();
+      if (data && data.kids) {
+        state.kids = data.kids;
+        ensureFields();
+        saveLocal();
+        render();
+      }
+    }, () => {
+      setSyncStatus("⚠️ 동기화 오류 — 잠시 후 다시 시도해요", false);
+    });
+
+    cloudReady = true;
+    setSyncStatus("☁️ 실시간 공유 켜짐 — 모든 기기가 함께 봐요", true);
+  } catch (e) {
+    setSyncStatus("📴 오프라인 — 인터넷 연결을 확인해주세요 (이 기기엔 저장됨)", false);
+  }
+}
+
 /* ---------- 시작 ---------- */
 render();
+initCloud();
