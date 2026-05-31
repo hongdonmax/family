@@ -143,6 +143,92 @@ body {
   padding: 0 4px;
 }
 
+/* 달력 */
+.calendar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.calendar-head .panel-title { margin: 0; }
+.cal-nav {
+  border: none;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 24px;
+  font-weight: 900;
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  cursor: pointer;
+  line-height: 1;
+}
+.cal-nav:active { transform: scale(.92); }
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.cal-weekdays .sun { color: var(--danger); }
+.cal-weekdays .sat { color: #3f7bff; }
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+.cal-cell {
+  aspect-ratio: 1 / 1;
+  border: 2px solid #eef0f6;
+  background: #fbfcfe;
+  border-radius: 12px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: pointer;
+  font: inherit;
+  transition: transform .08s ease;
+}
+.cal-cell:active { transform: scale(.94); }
+.cal-cell.blank { border: none; background: transparent; cursor: default; }
+.cal-cell .cal-day { font-size: 14px; font-weight: 700; color: var(--ink); }
+.cal-cell.sun .cal-day { color: var(--danger); }
+.cal-cell.sat .cal-day { color: #3f7bff; }
+.cal-cell .cal-stamp {
+  margin-top: auto;
+  font-size: 12px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+.cal-cell .cal-stamp.empty { min-height: 14px; }
+.cal-cell .cal-stamp b { font-size: 12px; color: var(--accent); }
+.cal-cell.today { border-color: var(--accent); }
+.cal-cell.selected {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.cal-cell.selected .cal-day,
+.cal-cell.selected.sun .cal-day,
+.cal-cell.selected.sat .cal-day { color: #fff; }
+.cal-cell.selected .cal-stamp b { color: #fff; }
+.cal-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 12px;
+}
+.btn.ghost {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
 /* 도장판 */
 .stamp-board {
   display: grid;
